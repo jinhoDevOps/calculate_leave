@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . /app
 
-RUN pip install flask
+RUN pip install flask numpy requests
 
 EXPOSE 25002
 

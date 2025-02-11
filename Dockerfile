@@ -8,4 +8,4 @@ RUN pip install flask
 
 EXPOSE 25002
 
-CMD ["python", "flask_annual_leave.py"]
+CMD ["python", "main.py"]

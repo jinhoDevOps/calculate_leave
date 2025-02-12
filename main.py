@@ -10,7 +10,7 @@ app = Flask(__name__)
 def fetch_holidays(year):
     try:
         response = requests.get(
-            f"https://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getHoliDeInfo?solYear={year}&ServiceKey=YOUR_API_KEY&_type=json"
+            f"https://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getHoliDeInfo?solYear={year}&ServiceKey=YOUR_API_KEY"
         )
         data = response.json()
         holidays = {
@@ -49,12 +49,11 @@ def calculate_leave(join_date_str):
 
     # 1년 미만 연차 발생 (입사일 기준)
     first_year_leave_start = join_date + timedelta(days=30)
-    first_year_leave_end = join_date.replace(
-        year=join_date.year + 1, month=join_date.month, day=join_date.day
-    ) - timedelta(days=1)
-    first_year_deadline = first_year_leave_end - timedelta(
-        days=1
-    )  # 1년 휴가 발생일 -1일로 변경
+    year_offset = (first_year_leave_start.month + 10 - 1) // 12
+    new_month = (first_year_leave_start.month + 10 - 1) % 12 + 1
+    first_year_leave_end = first_year_leave_start.replace(
+        year=first_year_leave_start.year + year_offset, month=new_month
+    )
     months_worked = (
         (first_year_leave_end.year - join_date.year) * 12
         + first_year_leave_end.month
@@ -65,39 +64,40 @@ def calculate_leave(join_date_str):
     # 1년 차 이후 연차 발생 (입사일 기준)
     one_year_later = join_date.replace(year=join_date.year + 1)
     one_year_leave_start = one_year_later
-    one_year_deadline = one_year_leave_start.replace(
-        year=one_year_leave_start.year + 1
-    ) - timedelta(
-        days=1
-    )  # 근속 2년 발생 직전일까지 사용 가능
+    one_year_deadline = one_year_later.replace(
+        year=one_year_later.year + 1
+    ) - timedelta(days=1)
     annual_leave = 15  # 1년차 연차는 15개 고정
+
+    # 1년 미만 연차 사용 기한
+    first_year_deadline = (one_year_leave_start - timedelta(days=1)).strftime(
+        "%Y-%m-%d"
+    )
 
     # 2년 차 이후 연차 발생 (입사일 기준)
     two_year_later = join_date.replace(year=join_date.year + 2)
-    two_year_deadline = two_year_later.replace(
-        year=two_year_later.year + 1
-    ) - timedelta(
-        days=1
-    )  # 근속 3년 발생 직전일까지 사용 가능
+    two_year_deadline = (
+        two_year_later.replace(year=two_year_later.year + 1) - timedelta(days=1)
+    ).strftime("%Y-%m-%d")
 
     return join_date.strftime("%Y-%m-%d"), [
         {
             "type": "입사 첫해, 1년 미만",
             "period": f"{first_year_leave_start.strftime('%Y-%m-%d')} ~ {first_year_leave_end.strftime('%Y-%m-%d')}",
             "leave_days": f"{earned_leaves}개",
-            "deadline": first_year_deadline.strftime("%Y-%m-%d") + " 까지 사용해야 함",
+            "deadline": first_year_deadline + " 까지 사용해야 함",
         },
         {
             "type": "1년",
-            "period": f"{one_year_leave_start.strftime('%Y-%m-%d')}",
+            "period": one_year_leave_start.strftime("%Y-%m-%d"),
             "leave_days": f"{annual_leave}개",
             "deadline": one_year_deadline.strftime("%Y-%m-%d") + " 까지 사용 가능",
         },
         {
             "type": "2년",
-            "period": f"{two_year_later.strftime('%Y-%m-%d')}",
+            "period": two_year_later.strftime("%Y-%m-%d"),
             "leave_days": f"{annual_leave}개",
-            "deadline": two_year_deadline.strftime("%Y-%m-%d") + " 까지 사용 가능",
+            "deadline": two_year_deadline + " 까지 사용 가능",
         },
     ]
 
@@ -138,6 +138,7 @@ HTML_TEMPLATE = """
     </form>
     
     {% if result %}
+    <hr>
     <h3>연차 계산 결과</h3>
     <h4>
         입력한 입사일: 

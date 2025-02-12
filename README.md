@@ -3,11 +3,12 @@
 ### 1. 도커 이미지 빌드
 ```sh
 docker build -t flask-annual-leave .
+docker image prune -f  # <none> 이미지 삭제
 ```
 
 ### 2. 컨테이너 실행 (백그라운드 모드)
 ```sh
-docker run -d -p 25002:25002 flask-annual-leave
+docker run -d  --name annual-leave -p 25002:25002 flask-annual-leave
 ```
 
 ### 3. 웹 애플리케이션 접속

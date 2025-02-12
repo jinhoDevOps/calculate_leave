@@ -85,19 +85,19 @@ def calculate_leave(join_date_str):
             "type": "입사 첫해, 1년 미만",
             "period": f"{first_year_leave_start.strftime('%Y-%m-%d')} ~ {first_year_leave_end.strftime('%Y-%m-%d')}",
             "leave_days": f"{earned_leaves}개",
-            "deadline": first_year_deadline + " 까지 사용해야 함",
+            "deadline": first_year_deadline + " 까지",
         },
         {
             "type": "1년",
             "period": one_year_leave_start.strftime("%Y-%m-%d"),
             "leave_days": f"{annual_leave}개",
-            "deadline": one_year_deadline.strftime("%Y-%m-%d") + " 까지 사용 가능",
+            "deadline": one_year_deadline.strftime("%Y-%m-%d") + " 까지",
         },
         {
             "type": "2년",
             "period": two_year_later.strftime("%Y-%m-%d"),
             "leave_days": f"{annual_leave}개",
-            "deadline": two_year_deadline + " 까지 사용 가능",
+            "deadline": two_year_deadline + " 까지",
         },
     ]
 

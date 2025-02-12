@@ -107,26 +107,66 @@ HTML_TEMPLATE = """
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>연차 자동 계산기</title>
     <style>
         body {
             margin: 20px;
             text-align: center;
+            font-family: Pretendard, sans-serif, Arial;
         }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        input, button {
+            font-size: 1rem;
+            padding: 10px;
+            margin: 5px;
+            width: 90%;
+            max-width: 400px;
+        }
+
         table {
             border-collapse: collapse;
-            width: 60%;
-            min-width: 660px;
+            width: 100%;
+            max-width: 800px;
             margin: 0 auto;
+            overflow-x: auto;
         }
+
         th, td {
             border: 1px solid black;
-            padding: 8px;
+            padding: 10px;
             text-align: center;
+            font-size: 1rem;
         }
+
         h4 {
             margin-top: 20px;
             white-space: pre-line;
+            font-size: 1.1rem;
+        }
+
+        /* 반응형 디자인 적용 */
+        @media (max-width: 768px) {
+            body {
+                font-size: 1rem;
+                margin: 10px;
+            }
+
+            table {
+                font-size: 0.9rem;
+                width: 100%;
+                min-width: 100%;
+            }
+
+            th, td {
+                padding: 8px;
+            }
         }
     </style>
 </head>
@@ -144,20 +184,23 @@ HTML_TEMPLATE = """
         입력한 입사일: 
         {{ join_date }}
     </h4>
-    <table>
-        <tr><th>구분</th><th>휴가 발생일</th><th>발생 연차</th><th>사용 기한</th></tr>
-        {% for row in result %}
-        <tr>
-            <td>{{ row["type"] }}</td>
-            <td>{{ row["period"] }}</td>
-            <td>{{ row["leave_days"] }}</td>
-            <td>{{ row["deadline"] }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+    <div style="overflow-x: auto;">
+        <table>
+            <tr><th>구분</th><th>휴가 발생일</th><th>발생 연차</th><th>사용 기한</th></tr>
+            {% for row in result %}
+            <tr>
+                <td>{{ row["type"] }}</td>
+                <td>{{ row["period"] }}</td>
+                <td>{{ row["leave_days"] }}</td>
+                <td>{{ row["deadline"] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
     {% endif %}
 </body>
 </html>
+
 """
 
 

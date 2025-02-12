@@ -52,9 +52,9 @@ def calculate_leave(join_date_str):
     first_year_leave_end = join_date.replace(
         year=join_date.year + 1, month=join_date.month, day=join_date.day
     ) - timedelta(days=1)
-    first_year_deadline = first_year_leave_end.replace(
-        day=28
-    )  # 근속 1년 발생 직전 월의 말일까지 사용 가능
+    first_year_deadline = first_year_leave_end - timedelta(
+        days=1
+    )  # 1년 휴가 발생일 -1일로 변경
     months_worked = (
         (first_year_leave_end.year - join_date.year) * 12
         + first_year_leave_end.month
@@ -138,7 +138,6 @@ HTML_TEMPLATE = """
     </form>
     
     {% if result %}
-    <hr>
     <h3>연차 계산 결과</h3>
     <h4>
         입력한 입사일: 
